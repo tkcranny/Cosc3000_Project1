@@ -1,0 +1,17 @@
+$col-shade: #222 ;
+
+body {
+  background-image: url("/static/images/shattered.png");
+}
+
+.container {
+  box-shadow: 0 0 5px $col-shade;
+  background-color: #FFFFFF;
+  padding-bottom: 25px;
+
+  transition: background-color 1s;
+
+  .main {
+    border: 1px solid $col-shade;
+  }
+}
