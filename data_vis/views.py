@@ -1,4 +1,4 @@
-from flask import send_file, render_template
+from flask import abort, send_file, render_template
 
 from . import app
 
@@ -10,3 +10,19 @@ def server_app():
     """
 
     return send_file("static/app/index.html")
+
+
+@app.route("/api/update/<string:resource>")
+def update_resource(resource):
+    """
+    Update a data resource.
+    :param resource: the name of a resource type (e.x. 'programs', 'courses')
+    :return: A HTTP response, 200 or 400
+    """
+
+    known_resources = {'courses', 'programs'}
+
+    if not resource in known_resources:
+        return abort(400, 'Not a known data resource.')
+
+    return "200 - OK!"

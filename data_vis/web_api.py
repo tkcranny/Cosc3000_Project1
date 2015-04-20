@@ -10,6 +10,16 @@ import re
 
 from flask.ext.restful import abort, Resource
 
+
+class CourseList(Resource):
+    """
+    """
+
+    def get(self, number):
+        """ Return a listing of courses.
+        """
+
+
 class Course(Resource):
     """
     """
