@@ -10,11 +10,12 @@
 from flask import Flask
 from flask.ext import restful
 
-from api import Course
+from .web_api import Course
 
 app = Flask(__name__)
-api = restful.Api(app)
+api = restful.Api(app)  # Initialise Flask-Restful extension.
 
+# Load HTTP routes for RESTful models.
 api.add_resource(Course, '/api/course/<string:course_code>')
 
 
