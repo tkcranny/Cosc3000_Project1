@@ -31,6 +31,8 @@ class Faculty(Base):
 
     id = Column(String(8), primary_key=True)
     title = Column(String(255), unique=True)
+    html_reference = Column(String(128), unique=True)
+
 
     programs = relationship('Program',
                             secondary=faculty_program_table,
@@ -49,11 +51,18 @@ class Program(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String(255), unique=True)
+    abbr = Column(String(128))
 
     units = Column(Integer)
     op = Column(Integer)
-    predicted_fee = Column(Integer)
+    annual_fee = Column(Integer)
     location = Column(String(128))
+    semesters = Column(Integer)
+
+    @property
+    def cost(self):
+        """Return the cost of the entire degree."""
+        return int(self.semesters * (self.annual_fee / 2))
 
     def __repr__(self):
         return "{}(id='{}', title='{}')".format(self.__class__.__name__, self.id, self.title)

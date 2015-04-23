@@ -37,18 +37,17 @@ def reset_db():
 
     # Load Faculties.
     faculty_info = [
-        ('BEL', 'Business, Economics and Law'),
-        ('EAIT', 'Engineering, Architecture and Information Technology'),
-        ('HABS', 'Health and Behavioural Sciences'),
-        ('HASS', 'Humanities and Social Sciences'),
-        ('MBS', 'Medicine and Biomedical Sciences'),
-        ('SCI', 'Science'),
+        ('BEL', 'Business, Economics and Law', 'index.html?id=4405'),
+        ('EAIT', 'Engineering, Architecture and Information Technology', 'index.html?id=4406'),
+        ('HABS', 'Health and Behavioural Sciences', None),
+        ('HASS', 'Humanities and Social Sciences', 'http://hass.uq.edu.au/'),
+        ('MBS', 'Medicine and Biomedical Sciences', 'http://health.uq.edu.au/medicine-biomedical-sciences'),
+        ('SCI', 'Science', 'index.html?id=4404'),
     ]
     # Add faculties to the database.
-    for fac_id, title in faculty_info:
-        fac_obj = Faculty(id=fac_id, title=title)
-        print('Adding {} to database'.format(fac_obj))
-        session.add(fac_obj)
+    for fac_id, title, href in faculty_info:
+        fac_obj = Faculty(id=fac_id, title=title, html_reference=href)
+        session.merge(fac_obj)
     session.commit()
 
 
@@ -58,6 +57,14 @@ def run_debug():
     Run a debug server.
     """
     app.run(debug=True)
+
+
+@manager.command
+def debug():
+    from data_vis.scraper import scrape
+    reset_db()
+    scrape()
+
 
 
 if __name__ == "__main__":
