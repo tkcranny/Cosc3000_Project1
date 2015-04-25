@@ -33,6 +33,10 @@ def reset_db():
     else:
         print('No SQLite file found.')
 
+
+    from data_vis.models import Base, engine
+    Base.metadata.create_all(engine)
+
     session = get_session()
 
     # Load Faculties.
@@ -61,9 +65,10 @@ def run_debug():
 
 @manager.command
 def debug():
-    from data_vis.scraper import scrape
+    from scraper import scrape_programs
+
     reset_db()
-    scrape()
+    scrape_programs()
 
 
 

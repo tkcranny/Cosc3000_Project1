@@ -1,39 +1,9 @@
-"""
-    Scraper
-    =======
-
-    Sub module for retreiving parsing and loading course data.
-
-"""
-
+from concurrent import futures as futures
 import re
 import shelve
-import concurrent.futures as futures
-
-import requests
 from bs4 import BeautifulSoup
-
-
-from .models import Program, Faculty, get_session
-
-
-class UqDataScraperError(Exception):
-    """ Custom error for this scraping sub-module.
-    """
-    pass
-
-
-def scrape():
-    """
-
-    :return:
-    """
-    session = get_session()
-
-    program_ids = _find_program_ids()
-    page_sources = _harvest_webpages(program_ids)
-    _analyse_webpages(page_sources, session)
-    session.commit()
+import requests
+from models import Program, Faculty
 
 
 def _find_program_ids():
@@ -161,6 +131,11 @@ def _analyse_page_source(page_source):
             .group(1)))
     except:
         print('\tCould not find SEMESTERS for', program_attributes['title'])
+
+    try: # Campus.
+        program_attributes['location'] = soup.find('p', {'id': 'program-domestic-location'}).text.strip()
+    except:
+        print('Could not find LOCATION for', program_attributes['title'])
 
     # Extract faculty references.
     faculty_refs = [a['href'].strip() for a in soup.find(

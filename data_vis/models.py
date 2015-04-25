@@ -5,17 +5,8 @@ from sqlalchemy.orm import sessionmaker, relationship
 
 
 Base = declarative_base()
-
-
-def get_session():
-    """
-    Provide a new database session.
-    """
-
-    engine = create_engine('sqlite:///courses.db')
-    Base.metadata.create_all(engine)
-    session_maker = sessionmaker(bind=engine)
-    return session_maker()
+engine = create_engine('sqlite:///courses.db')
+get_session = sessionmaker(bind=engine)
 
 
 faculty_program_table = Table('faculty_program_association', Base.metadata,
@@ -43,7 +34,6 @@ class Faculty(Base):
         return "{}(id='{}', title='{}')".format(self.__class__.__name__, self.id, self.title)
 
 
-
 class Program(Base):
     """UQ offered program."""
 
@@ -66,7 +56,6 @@ class Program(Base):
 
     def __repr__(self):
         return "{}(id='{}', title='{}')".format(self.__class__.__name__, self.id, self.title)
-
 
 
 class Major(Base):
