@@ -1,5 +1,5 @@
 from models import get_session
-from scraper.program import _find_program_ids, _harvest_webpages, _analyse_webpages
+from scraper.programs import _find_program_ids, _harvest_webpages, _analyse_webpages
 
 
 def scrape_programs():

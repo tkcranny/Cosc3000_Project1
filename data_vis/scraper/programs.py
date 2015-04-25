@@ -17,7 +17,7 @@ def _find_program_ids():
     resp = requests.get(program_url)
     soup = BeautifulSoup(resp.content)
 
-    extract_a_tags = lambda t: t.find('a')
+    extract_a_tags = lambda tag: tag.find('a')
     prog_rows = map(extract_a_tags, soup.find_all('td', {'class': 'title'}))
 
     # Filter to links that have links to Program pages in them.
