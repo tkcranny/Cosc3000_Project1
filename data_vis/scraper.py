@@ -17,16 +17,6 @@ from bs4 import BeautifulSoup
 from .models import Program, Faculty, get_session
 
 
-# FACULTY_REF = {
-#     'index.html?id=4405': 'BEL',
-#     'index.html?id=4406': 'EAIT',
-#     # '': 'HABS',
-#     'http://hass.uq.edu.au/': 'HASS',
-#     'http://health.uq.edu.au/medicine-biomedical-sciences': 'MBS',
-#     'index.html?id=4404': 'SCI',
-# }
-
-
 class UqDataScraperError(Exception):
     """ Custom error for this scraping sub-module.
     """
@@ -38,11 +28,34 @@ def scrape():
 
     :return:
     """
+    session = get_session()
+
+    program_ids = _find_program_ids()
+    page_sources = _harvest_webpages(program_ids)
+    _analyse_webpages(page_sources, session)
+    session.commit()
+
+
+def _find_program_ids():
+    """
+    Construct a list of Undergraduate program IDS.
+    :param soup:
+    :return:
+    """
+    # Fetch web page.
     program_url = 'https://www.uq.edu.au/study/browse.html?level=ugpg'
     resp = requests.get(program_url)
-    program_ids = _find_program_ids(resp.content)
-    page_sources = _harvest_webpages(program_ids)
+    soup = BeautifulSoup(resp.content)
 
+    extract_a_tags = lambda t: t.find('a')
+    prog_rows = map(extract_a_tags, soup.find_all('td', {'class': 'title'}))
+
+    # Filter to links that have links to Program pages in them.
+    progs = [a for a in prog_rows if a and a.has_attr('href')]
+
+    # Extract ID codes.
+    prog_ids = [prog['href'].split('=')[-1].strip() for prog in progs]
+    return prog_ids
 
 
 def _harvest_webpages(program_ids, from_shelf=True):
@@ -79,105 +92,78 @@ def _harvest_webpages(program_ids, from_shelf=True):
     return sources
 
 
+def _analyse_webpages(page_sources, session):
+    """
+    Takes a series of web page sources (bytes) and analyses
+    :param page_sources:
+    :return:
+    """
+    prog_dicts = map(_analyse_page_source, page_sources)
+    # session = get_session()
 
-def _process_program_page(page_source):
-    """Return a dictionary of proram attributes from a web pages source"""
+    # with session.no_autoflush:
+    for prog_dict, faculty_refs in prog_dicts:
+        program = Program(**prog_dict)
+        print('Analysed {}. ID: {}'.format(program.title, program.id))
+
+        if not session.query(Program).filter_by(id=program.id).count():
+            session.add(program)
+            session.commit()
+        else:
+            print('\tPROGRAM ALREADY EXISTS:', program.id)
+
+        for faculty_ref in faculty_refs:
+            try:
+                faculty_obj = session.query(Faculty).filter_by(html_reference=faculty_ref).first()
+                program.faculties.append(faculty_obj)
+            except:
+                print('\tFAILED FOR FACULTY LINK:', faculty_ref)
+
+
+def _analyse_page_source(page_source):
+    """Return a dictionary of program attributes from a web pages source"""
     soup = BeautifulSoup(page_source)
 
     # Retrieve attributes from HTML source.
-    program_attributes = {
-        'title': soup.find('span', {'id': 'program-title'}).text.strip(),
-        'abbr': soup.find('span', {'id': 'program-abbreviation'}).text.strip(),
-        'units': int(soup.find('p', {'id': 'program-domestic-units'}).text),
-        'op': int(soup.find('span', {'id': 'program-domestic-entryreq'})
-                  .find('p').text.split('/')[0].strip()),
-        'annual_fee': int(soup.find('p', {'class': 'fees'}).text.split()[-1]),
-        'semesters': int(2 * float(re.search(  # Calculate number of semesters.
+    program_attributes = {}
+
+    # Set the title and ID.
+    program_attributes['title'] = soup.find('span', {'id': 'program-title'}).text.strip()
+    program_attributes['id'] = int(soup.find('p', {'id': 'program-domestic-programcode'}).text)
+
+    # Attempt to extract other attributes
+
+    try: # Course abbreviation.
+        program_attributes['abbr'] = soup.find('span', {'id': 'program-abbreviation'}).text.strip()
+    except:
+        print('\tCould not find abbr for', program_attributes['title'])
+
+    try: # Number of units
+        program_attributes['units'] = int(soup.find('p', {'id': 'program-domestic-units'}).text)
+    except:
+        print('\tCould not find UNITS for', program_attributes['title'])
+
+    try: # Entry OP
+        program_attributes['op'] = int(soup.find('span', {'id': 'program-domestic-entryreq'})
+                  .find('p').text.split('/')[0].strip())
+    except:
+        print('\tCould not find OP for', program_attributes['title'])
+
+    try: # Annual fee
+        program_attributes['annual_fee'] = int(soup.find('p', {'class': 'fees'}).text.split()[-1])
+    except:
+        print('\tCould not find FEE for', program_attributes['title'])
+
+    try: # Numer of Semesters.
+        program_attributes['semesters'] = int(2 * float(re.search(
                 '(\\d+(\\.\\d+)?)',
                 soup.find('p', {'id': 'program-domestic-duration'}).text)
-            .group(1))),
-    }
+            .group(1)))
+    except:
+        print('\tCould not find SEMESTERS for', program_attributes['title'])
 
-
-def _scrape_program(prog_code, session):
-    """
-    Build a (UQ) Program object by scraping the website.
-    :param prog_code: A program's code as assigned by UQ.
-    :return: A :models.Program: instance.
-    """
-
-    prog_url = 'https://www.uq.edu.au/study/program.html?acad_prog={}'
-    resp = requests.get(prog_url.format(prog_code))
-    soup = BeautifulSoup(resp.content)
-
-    print('Program ID:', prog_code)
-
-
-    print('Program {} analysed (id: {})'.format(program_attributes['title'], prog_code))
-
-    # Create the program object.
-    program = Program(id=prog_code, **program_attributes)
-
-    # Link the relevant faculties.
-    faculty_references = [a['href'].strip() for a in soup.find(
+    # Extract faculty references.
+    faculty_refs = [a['href'].strip() for a in soup.find(
         'p', {'id': 'program-domestic-faculty'}).find_all('a')]
 
-
-    faculties = []
-    for faculty_ref in faculty_references:
-        faculty_obj = session.query(Faculty).filter_by(html_reference=faculty_ref).one()
-        faculties.append(faculty_obj)
-
-    program.faculties.extend(faculties)
-
-    return program
-
-
-
-
-def _find_program_ids(page_source):
-    """
-    Construct a list of Undergraduate program IDS.
-    :param soup:
-    :return:
-    """
-
-    soup = BeautifulSoup(page_source)
-
-    extract_a_tags = lambda t: t.find('a')
-    prog_rows = map(extract_a_tags, soup.find_all('td', {'class': 'title'}))
-
-    # Filter to links that have links to Program pages in them.
-    progs = [a for a in prog_rows if a and a.has_attr('href')]
-
-    # Construct a list of program objects.
-
-    # failed = []
-
-    prog_ids = [prog['href'].split('=')[-1].strip() for prog in progs]
-    return prog_ids
-
-    # for prog in progs:
-    #         prog_id = prog['href'].split('=')[-1].strip()
-    #         try:
-    #             prog_obj = _scrape_program(prog_id, session)
-    #             session.add(prog_obj)
-    #         except:
-    #             print('  failed for', prog_id)
-    #             failed.append(prog_id)
-
-    # prog_objs = [_scrape_program(prog['href'].split('=')[-1].strip(), session) for prog in progs]
-    # session.add_all(prog_objs)
-    # print("{} ({:%}) failed programs:".format(failed, len(failed)/len(progs)))
-    # session.commit()
-
-
-def retrieve_programs():
-    """
-    Fetch *data structure* of courses from the UQ undergraduate site.
-    :return: A list of :models.Course: Objects
-    """
-
-
-
-
+    return program_attributes, faculty_refs

@@ -39,7 +39,7 @@ def reset_db():
     faculty_info = [
         ('BEL', 'Business, Economics and Law', 'index.html?id=4405'),
         ('EAIT', 'Engineering, Architecture and Information Technology', 'index.html?id=4406'),
-        ('HABS', 'Health and Behavioural Sciences', None),
+        ('HABS', 'Health and Behavioural Sciences', 'http://health.uq.edu.au/health-behavioural-sciences'),
         ('HASS', 'Humanities and Social Sciences', 'http://hass.uq.edu.au/'),
         ('MBS', 'Medicine and Biomedical Sciences', 'http://health.uq.edu.au/medicine-biomedical-sciences'),
         ('SCI', 'Science', 'index.html?id=4404'),

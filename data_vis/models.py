@@ -50,7 +50,7 @@ class Program(Base):
     __tablename__ = 'programs'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(255), unique=True)
+    title = Column(String(255))
     abbr = Column(String(128))
 
     units = Column(Integer)
