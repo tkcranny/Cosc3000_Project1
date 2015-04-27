@@ -65,14 +65,14 @@ def run_debug():
 
 @manager.command
 def seed_programs():
-    from scraper import scrape_programs
+    from data_vis.scraper import scrape_programs
     reset_db()
     scrape_programs()
 
 
 @manager.command
 def seed_majors():
-    from scraper import scrape_majors
+    from data_vis.scraper import scrape_majors
     scrape_majors()
 
 

@@ -72,7 +72,7 @@ class Major(Base):
     __tablename__ = 'majors'
 
     id = Column(String(10), primary_key=True)
-    title = Column(String(10), unique=True)
+    title = Column(String(10))
     program_id = Column(Integer, ForeignKey('programs.id'))
 
     def __repr__(self):

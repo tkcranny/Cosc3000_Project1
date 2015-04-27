@@ -15,10 +15,10 @@ from collections import namedtuple
 import requests
 from bs4 import BeautifulSoup
 
-from data_vis.models import Program, Faculty, get_session
+from data_vis.models import Major, get_session
 
 # Tuple to store a majors information.
-ProgramRecord = namedtuple('Program', ['title', 'id', 'program_id'])
+MajorRecord = namedtuple('Program', ['title', 'id', 'program_id'])
 
 
 def get_major_ids():
@@ -70,7 +70,7 @@ def harvest_majors(major_ids, from_cache=True):
 
     results = futures.wait(page_futures)  # Wait for all the downloads to complete.
 
-    # Create a new dict mapping ids to the content just downloaded.
+    # Create a new dict mapping ids to the content just downloaded.SQLite -
     sources = {completed.result().url.split('=')[-1].strip(): completed.result().content for completed in results.done}
     print('Downloaded {} more majors.'.format(len(sources)))
 
@@ -102,25 +102,27 @@ def process_pages(page_sources):
                 'id': major_id,
                 'program_id': int(soup.find('p', {'id': 'plan-field-key'}).text)
             }
-            program_records.append(ProgramRecord(**attrs))
+            program_records.append(MajorRecord(**attrs))
         except AttributeError:  # Catch bad web pages.
             print('Major {} has bad html!'.format(major_id))
 
     return program_records
 
 
-def add_programs_to_db(program_rows):
+def add_programs_to_db(major_rows):
     """
     Adds a collection of UQ major records into the database. Opens a connection and closes it.
-    :param programs: a collection of ProgramRecord named-tuples.
+    :param major_rows: a collection of MajorRecord named-tuples.
     :return: None.
     """
-    programs = []
-    for program_row in program_rows:
-        program = Major(id=program_row.id, title=program_row.title)
-        program.program_id = program_row.program_id
+    majors = []
+    for major_row in major_rows:
+        major = Major(id=major_row.id, title=major_row.title)
+        major.program_id = major_row.program_id
+        majors.append(major)
+        print('Added', major.title)
 
     session = get_session()
-    session.add_all(programs)
+    session.add_all(majors)
     session.commit()
     session.close()
