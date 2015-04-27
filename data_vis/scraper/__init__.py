@@ -23,6 +23,8 @@ def scrape_majors():
     """
     major_ids = majors.get_major_ids()
     major_sources = majors.harvest_majors(major_ids)
+    major_dicts = majors.process_pages(majour_sources)
+
 
     return major_sources
 

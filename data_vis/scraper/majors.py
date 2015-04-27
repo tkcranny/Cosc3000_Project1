@@ -6,7 +6,9 @@
 """
 
 
-import shelve
+# import shelve
+import json
+import os
 from concurrent import futures
 import requests
 from bs4 import BeautifulSoup
@@ -28,17 +30,15 @@ def get_major_ids():
     return major_codes
 
 
-def harvest_majors(major_ids, from_shelf=True):
+def harvest_majors(major_ids, from_cache=True):
     """
     Fetch a collection of UQ major web pages asyncronously.
 
-    This method can use a local cache, implemented using the native 'shelve' module.
-    All major data is stored under the key in the shelf of 'major_sources'.
-    The value of the 'major_sources' mapping should be a dictionary itself,
-     mapping 10 character major codes to their page source.
+    This method can use a local cache, where results are stored in
+    an external JSON file.
 
     :param major_ids: A collection of 10 character major codes.
-    :param from_shelf: Use a local cache if possible.
+    :param from_cache: Use a local cache if possible.
     :return: A list of web page sources.
     """
 
@@ -46,39 +46,39 @@ def harvest_majors(major_ids, from_shelf=True):
 
     majors = {} # The mapping to be populated and returned.
 
+    print('Loading from cache...')
     # Load already downloaded pages first.
-    if from_shelf:
+    if from_cache and os.path.exists('.cache/majors.json'):
         # Load the 'majors' key from a local dict. the value should be
-        with shelve.open('local_shelf') as db_read:
-            cached = db_read.get('major_sources', {})
-            majors.update(cached)
+        with open('.cache/majors.json', 'r') as fh_read:
+            majors.update(json.loads(fh_read.read()))
         print('Retrieved {} majors from local cache'.format(len(majors)))
 
     # Find and retrieve non-downloaded pages (by excluding cached IDs).
     to_dl_ids = set(major_ids) - set(majors.keys())
 
-    if to_dl_ids:
-        to_dl_urls = [major_url_template.format(major_id) for major_id in to_dl_ids][:100]
-        print('About to download {} major pages'.format(len(to_dl_urls)))
+    print('{} to download'.format(len(to_dl_ids)))
 
-        with futures.ThreadPoolExecutor(max_workers=10) as executor:
-            page_futures = [executor.submit(requests.get, major_url) for major_url in to_dl_urls]
+    to_dl_urls = [major_url_template.format(major_id) for major_id in to_dl_ids]
+    print('About to download {} major pages'.format(len(to_dl_urls)))
 
-        print('Downloading...')
-        results = futures.wait(page_futures)  # Wait for all the downloads to complete.
+    with futures.ThreadPoolExecutor(max_workers=10) as executor:
+        page_futures = [executor.submit(requests.get, major_url) for major_url in to_dl_urls]
 
-        # Create a new dict mapping ids to the content just downloaded.
-        sources = {completed.result().url.split('=')[-1].strip(): completed.result().content for completed in results.done}
-        print('Downloaded {} more majors.'.format(len(sources)))
+    print('Downloading...')
+    results = futures.wait(page_futures)  # Wait for all the downloads to complete.
 
-        bad_items = list(k for k in sources.keys() if len(k) != 10)
-        if bad_items:
-            print('BAD KEYS DETECTED:', bad_items)
+    # Create a new dict mapping ids to the content just downloaded.
+    sources = {completed.result().url.split('=')[-1].strip(): completed.result().content for completed in results.done}
+    print('Downloaded {} more majors.'.format(len(sources)))
 
-        majors.update(sources)  # Incorporate downloaded pages into dict.
+    majors.update(sources)  # Incorporate downloaded pages into dict.
 
-    # Save everything to local shelf.
-    with shelve.open('local_shelf') as db_write:
-        db_write['major_sources'] = majors
+    majors = {k: v.decode('utf-8') if isinstance(v, bytes) else v for k,v in majors.items()}
+
+    print()
+    # Save everything to local cache.
+    with open('.cache/majors.json', 'w') as fh_out:
+        fh_out.write(json.dumps(majors))
 
     return majors
