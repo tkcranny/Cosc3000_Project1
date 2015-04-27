@@ -23,12 +23,5 @@ def scrape_majors():
     """
     major_ids = majors.get_major_ids()
     major_sources = majors.harvest_majors(major_ids)
-    major_dicts = majors.process_pages(majour_sources)
-
-
-    return major_sources
-
-
-    # session = get_session()
-    #
-    # major_ids = majors.find_major_ids()
+    major_rows = majors.process_pages(major_sources)
+    majors.add_programs_to_db(major_rows)
