@@ -1,15 +1,15 @@
-from concurrent import futures as futures
+from concurrent import futures
 import re
 import shelve
 from bs4 import BeautifulSoup
 import requests
-from models import Program, Faculty
+#from .. import models #import Program, Faculty
+from data_vis.models import Program, Faculty
 
 
-def _find_program_ids():
+def find_program_ids():
     """
     Construct a list of Undergraduate program IDS.
-    :param soup:
     :return:
     """
     # Fetch web page.
@@ -28,7 +28,7 @@ def _find_program_ids():
     return prog_ids
 
 
-def _harvest_webpages(program_ids, from_shelf=True):
+def harvest_program_pages(program_ids, from_shelf=True):
     """
     Download the source of program pages efficiently.
     :param program_ids: A collection of UQ Program IDs.
@@ -62,13 +62,13 @@ def _harvest_webpages(program_ids, from_shelf=True):
     return sources
 
 
-def _analyse_webpages(page_sources, session):
+def analyse_webpages(page_sources, session):
     """
     Takes a series of web page sources (bytes) and analyses
     :param page_sources:
     :return:
     """
-    prog_dicts = map(_analyse_page_source, page_sources)
+    prog_dicts = map(analyse_page_source, page_sources)
     # session = get_session()
 
     # with session.no_autoflush:
@@ -90,7 +90,7 @@ def _analyse_webpages(page_sources, session):
                 print('\tFAILED FOR FACULTY LINK:', faculty_ref)
 
 
-def _analyse_page_source(page_source):
+def analyse_page_source(page_source):
     """Return a dictionary of program attributes from a web pages source"""
     soup = BeautifulSoup(page_source)
 

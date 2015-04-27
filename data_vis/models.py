@@ -14,6 +14,11 @@ faculty_program_table = Table('faculty_program_association', Base.metadata,
                               Column('prog_code', Integer, ForeignKey('programs.id'))
                               )
 
+# program_major_table = Table('program_major_association', Base.metadata,
+#                             Column('prog_code', String, ForeignKey('programs.id')),
+#                             Column('major_code', String, ForeignKey('majors.id'))
+#                             )
+
 
 class Faculty(Base):
     """"""
@@ -54,6 +59,9 @@ class Program(Base):
         """Return the cost of the entire degree."""
         return int(self.semesters * (self.annual_fee / 2))
 
+    majors = relationship('Major', backref='program')
+
+
     def __repr__(self):
         return "{}(id='{}', title='{}')".format(self.__class__.__name__, self.id, self.title)
 
@@ -61,10 +69,11 @@ class Program(Base):
 class Major(Base):
     """"""
 
-    __tablename__ = 'major'
+    __tablename__ = 'majors'
 
-    plan_id = Column(String(10), primary_key=True)
+    id = Column(String(10), primary_key=True)
     title = Column(String(10), unique=True)
+    program_id = Column(Integer, ForeignKey('programs.id'))
 
     def __repr__(self):
         return "{}(plan_id='{}', title='{}')".format(self.__class__.__name__, self.plan_id, self.title)

@@ -64,12 +64,16 @@ def run_debug():
 
 
 @manager.command
-def debug():
+def seed_programs():
     from scraper import scrape_programs
-
     reset_db()
     scrape_programs()
 
+
+@manager.command
+def seed_majors():
+    from scraper import scrape_majors
+    scrape_majors()
 
 
 if __name__ == "__main__":
