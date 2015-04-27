@@ -10,28 +10,44 @@ import re
 
 from flask.ext.restful import abort, Resource
 
+from .models import Program, Major, get_session
 
-class CourseList(Resource):
+
+class ProgramListApi(Resource):
     """
+    Restful configuration for listing Programs.
     """
 
-    def get(self, number):
-        """ Return a listing of courses.
+    def get(self):
+        """
+        Return all known programs in json form.
+        :return: A JSON HTTP response.
         """
 
+        session = get_session()
+        query = session.query(Program)
+        result = [program.to_dict() for program in query]
+        return result
 
-class Course(Resource):
-    """
+
+
+class ProgramApi(Resource):
     """
 
-    def get(self, course_code):
-        """ Return information in JSON form about a UQ Course.
+    """
+
+    def get(self, program_id):
         """
-        if not re.match('^[a-z]{4}[0-9]{4}$', course_code):
-            abort(404, message='Not a valid course code')
 
+        :param code:
+        :return:
+        """
 
-        return {
-            'name': 'not known',
-            'code': course_code,
-        }
+        session = get_session()
+
+        query = session.query(Program).filter_by(id=program_id)
+
+        if query.count() != 1:
+            abort(404)
+
+        return query.one().to_dict()

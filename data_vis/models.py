@@ -65,6 +65,15 @@ class Program(Base):
     def __repr__(self):
         return "{}(id='{}', title='{}')".format(self.__class__.__name__, self.id, self.title)
 
+    def to_dict(self):
+        """
+        Method to convert a Program Model instance into a dictionary.
+        """
+        attrs = {'id', 'title', 'abbr', 'units', 'op', 'annual_fee', 'location', 'semesters'}
+        result = {attr: getattr(self, attr) for attr in attrs}
+        result['cost'] = self.cost
+        return result
+
 
 class Major(Base):
     """"""

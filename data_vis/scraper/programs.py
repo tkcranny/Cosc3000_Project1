@@ -1,9 +1,10 @@
 from concurrent import futures
 import re
 import shelve
+
 from bs4 import BeautifulSoup
 import requests
-#from .. import models #import Program, Faculty
+
 from data_vis.models import Program, Faculty
 
 
@@ -28,15 +29,15 @@ def find_program_ids():
     return prog_ids
 
 
-def harvest_program_pages(program_ids, from_shelf=True):
+def harvest_program_pages(program_ids, from_cache=True):
     """
     Download the source of program pages efficiently.
     :param program_ids: A collection of UQ Program IDs.
     :return: A list of web page sources
     """
 
-    if from_shelf:
-        with shelve.open('local_shelf') as db_read:
+    if from_cache:
+        with shelve.open('.cache/local_shelf') as db_read:
             sources = db_read.get('program_pages')
         if sources:
             return sources
@@ -56,7 +57,7 @@ def harvest_program_pages(program_ids, from_shelf=True):
     sources = [completed.result().content for completed in results.done]
     print('Downloaded {} pages'.format(len(sources)))
 
-    with shelve.open('local_shelf') as db_write:
+    with shelve.open('.cache/local_shelf') as db_write:
         db_write['program_pages'] = sources
 
     return sources

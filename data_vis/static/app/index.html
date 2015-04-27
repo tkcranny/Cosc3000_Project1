@@ -19,7 +19,20 @@
 </head>
 <body>
 
-<div ng-view></div>
+<div class="container">
+    <h1 class="text-center">
+        University of Queensland Course Analysis
+        <br>
+        <small>COSC3000 Data Visualisation Project</small>
+    </h1>
+    <ul class="menu">
+        <li><a href="#/">Home</a></li>
+        <li><a href="#/Programs">Programs</a></li>
+        <li><a href="#/Majors">Majors</a></li>
+    </ul>
+    <hr>
+    <div ng-view></div>
+</div>
 
 <script src="/static/components/angular/angular.js"></script>
 <script src="/static/components/angular-route/angular-route.js"></script>
@@ -28,6 +41,8 @@
 
 
 <script src="/static/app/app.js"></script>
-<script src="/static/app/view_project1/view_project1.js"></script>
+<script src="/static/app/view_home/view_home.js"></script>
+<script src="/static/app/view_programs/view_programs.js"></script>
+<script src="/static/app/view_majors/view_majors.js"></script>
 </body>
 </html>

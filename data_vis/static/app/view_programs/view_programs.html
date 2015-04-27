@@ -1,0 +1,20 @@
+<div ng-controller="ViewProgramsCtrl">
+    <h2>Programs</h2>
+
+    <label class="pull-right"><input ng-model="searchText" class="form-control" placeholder="Search Programs"></label>
+
+    <table class="table table-striped table-condensed table-hover">
+        <tr>
+            <th>Program Name</th>
+            <th>Duration</th>
+            <th>Entry OP</th>
+            <th>Estimated Total Cost</th>
+        </tr>
+        <tr ng-repeat="program in programs | filter:searchText">
+            <td>{{program.title}} ({{program.abbr}})</td>
+            <td>{{program.semesters / 2}} yrs</td>
+            <td>{{program.op}}</td>
+            <td>{{program.cost|currency}}</td>
+        </tr>
+    </table>
+</div>

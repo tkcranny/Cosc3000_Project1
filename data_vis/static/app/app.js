@@ -4,8 +4,10 @@
 angular.module('project1App', [
     'ngRoute',
     'ui.bootstrap',
-    'project1App.viewProject1'
+    'project1App.viewHome',
+    'project1App.viewPrograms',
+    'project1App.viewMajors'
 ]).
     config(['$routeProvider', function($routeProvider) {
-        $routeProvider.otherwise({redirectTo: '/Project1'});
+        $routeProvider.otherwise({redirectTo: '/'});
     }]);

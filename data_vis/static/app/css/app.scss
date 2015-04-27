@@ -1,7 +1,11 @@
-$col-shade: #222;
+$col-shade: #49075E;
 
 body {
   background-image: url("/static/images/shattered.png");
+  font-family: serif;
+  h1 {
+    font-variant: small-caps;
+  }
 }
 
 .container {
@@ -11,7 +15,32 @@ body {
 
   transition: background-color 1s;
 
-  .main {
-    border: 1px solid $col-shade;
+  .menu {
+    text-align: center;
+    &:before {
+      content: "[";
+    }
+
+    &:after {
+      content: "]";
+    }
+
+    & > li {
+      display: inline;
+    }
+
+     & > li:before {
+      content: "|";
+      padding-right: 0.3em;
+    }
+
+    li:nth-child(1):before {
+      content: "";
+      padding: 0;
+    }
   }
+}
+
+.main {
+  border: 1px solid $col-shade;
 }
