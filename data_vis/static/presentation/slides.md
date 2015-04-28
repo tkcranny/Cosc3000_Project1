@@ -16,7 +16,7 @@
 
 
 
-![Alt text](/static/presentation/images/all_scatter_trans.png)
+![Alt text](/static/presentation/images/faculty_degrees.svg)
 
 
 
