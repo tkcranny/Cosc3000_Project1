@@ -23,7 +23,11 @@
 <body>
 <div class="reveal">
     <div class="slides">
-        <section data-markdown="/static/presentation/slides.md" data-separator="^\n\n\n" data-vertical="^\n\n"></section>
+        <section data-markdown="/static/presentation/slides.md"
+                 data-separator="^\r?\n---\r?\n"
+                 data-separator-vertical="^\r?\n--\r?\n"
+                 data-separator-notes="^Note:">
+        </section>
     </div>
 </div>
 
@@ -31,18 +35,18 @@
 <script src="/static/components/reveal.js/js/reveal.js"></script>
 <script type="text/javascript">
     Reveal.initialize({
+        controls: true,
+        progress: true,
         history: true,
+        center: true,
 
+        // Optional libraries used to extend on reveal.js
         dependencies: [
-            { src: 'lib/js/classList.js', condition: function() {return !document.body.classList;}},
-
-            // Interpret Markdown in <section> elements
+            { src: '/static/components/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
             { src: '/static/components/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
             { src: '/static/components/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-
-            { src: '/static/components/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); }
-            }
-
+            { src: '/static/components/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+            { src: '/static/components/reveal.js/plugin/notes/notes.js' }
         ]
     });
 </script>
