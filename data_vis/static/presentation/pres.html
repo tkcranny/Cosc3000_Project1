@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>COSC3000 Project 1 Presentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/static/components/reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="/static/components/reveal.js/css/theme/serif.css" id="theme">
+    <link rel="stylesheet" href="/static/components/reveal.js/lib/css/zenburn.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+        <section data-markdown="/static/presentation/slides.md" data-separator="^\n\n\n" data-vertical="^\n\n"></section>
+    </div>
+</div>
+
+<script src="/static/components/reveal.js/lib/js/head.min.js"></script>
+<script src="/static/components/reveal.js/js/reveal.js"></script>
+<script type="text/javascript">
+    Reveal.initialize({
+        history: true,
+
+        dependencies: [
+            { src: 'lib/js/classList.js', condition: function() {return !document.body.classList;}},
+
+            // Interpret Markdown in <section> elements
+            { src: '/static/components/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+            { src: '/static/components/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+
+            { src: '/static/components/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); }
+            }
+
+        ]
+    });
+</script>
+</body>
+
+</html>

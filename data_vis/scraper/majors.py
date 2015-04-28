@@ -122,6 +122,8 @@ def add_programs_to_db(major_rows):
         majors.append(major)
         print('Added', major.title)
 
+    print()
+
     session = get_session()
     session.add_all(majors)
     session.commit()

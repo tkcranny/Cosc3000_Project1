@@ -1,4 +1,4 @@
-from flask import abort, send_file, render_template
+from flask import abort, send_file
 
 from . import app
 
@@ -26,3 +26,7 @@ def update_resource(resource):
         return abort(400, 'Not a known data resource.')
 
     return "200 - OK!"
+
+@app.route('/Presentation')
+def serve_presentation():
+    return app.send_static_file('presentation/pres.html')
