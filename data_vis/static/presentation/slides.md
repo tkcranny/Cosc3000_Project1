@@ -17,9 +17,10 @@ Web-App (?) to analyse the programs UQ offers.
     - No course plan.
     - Two separate faculties to liaise with.
 
-- Interesting and relevant data-set to me.
+- Significant and relevant data-set to me.
 
-Note: Faculties seem happy to say "let the other faculty" handle it 
+Note:
+- Faculties happy to direct yo to the other faculty.
 
 ---
 
@@ -46,6 +47,12 @@ Note: Faculties seem happy to say "let the other faculty" handle it
 ### Programs Offer Majors
 Specialisations on a topic
 
+~2000 majors offered.
+
+Note:
+- Huge amount of cross over and extended versions.
+    - Each programs have theit own versions of similar majors. 
+
 --
 
 ### Some programs can be done together
@@ -57,6 +64,9 @@ May have specific cross faculty Majors, or multiple from the constituent Program
 
 ~30 Dual Degree programs offered
 
+Note:
+- Honors programs inflate number of effective programs.
+
 ---
 
 # Analysis
@@ -66,6 +76,11 @@ May have specific cross faculty Majors, or multiple from the constituent Program
 
 ![Programs offered by faculties](/static/presentation/images/faculty_degrees_trans.png)
 
+Note:
+- MBS faculty is essentially non-existant in the undergraduate world.
+- HABS offers fewer programs than anything else, very isolated.
+- EAIT offers more shared programs than expected.
+
 ---
 
 ## Where are the Dual Degrees being shared?
@@ -74,7 +89,10 @@ May have specific cross faculty Majors, or multiple from the constituent Program
 
 ![Faculty relationships of degrees](/static/presentation/images/faculty_dual_degrees_trans.png)
 
-Note: The HASS (Arts) band is brighter, showing it has many duals. As the previous graph showed, HABS does not share much.
+Note:
+- The HASS (Arts) band is brighter, has many duals.
+- HABS does not share much (Previous graph).
+- EAIT shares more with BEL and SCI than HASS
 
 ---
 
@@ -86,9 +104,7 @@ Note: The HASS (Arts) band is brighter, showing it has many duals. As the previo
 
 Note: HABS has the lowest cutoff, due to popularity?
 
-
 ---
-
 
 ## Program Fees
 
@@ -96,8 +112,9 @@ Note: HABS has the lowest cutoff, due to popularity?
 
 ![Distribution of program fees by faculty](/static/presentation/images/faculty_fees_outliers_trans.png)
 
-Note: 2 crazy outliers, EAIT one because of a glitch, but the valid price for international students doing a bachelor of
-  Engineering (honours) **and** a Masters of Engineering.
+Note:
+2 crazy outliers:
+- EAIT one because of a glitch, but the valid price for international students doing a bachelor of Engineering (honours) **and** a Masters of Engineering.
 
 --
 
